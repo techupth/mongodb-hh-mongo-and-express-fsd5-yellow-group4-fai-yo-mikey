@@ -22,10 +22,15 @@ function HomePage() {
     }
   };
 
-  const deleteProduct = async (productId) => {
-    await axios.delete(`http://localhost:4001/products/${productId}`);
-    const newProducts = products.filter((product) => product.id !== productId);
-    setProducts(newProducts);
+  const deleteProduct = async (productId, index) => {
+    try {
+      await axios.delete(`http://localhost:4001/products/${productId}`);
+      const newProducts = [...products];
+      newProducts.splice(index, 1);
+      setProducts(newProducts);
+    } catch (error) {
+      console.log("Error deleting product");
+    }
   };
 
   useEffect(() => {
@@ -71,7 +76,7 @@ function HomePage() {
             <h1>No Products</h1>
           </div>
         )}
-        {products.map((product) => {
+        {products.map((product, index) => {
           return (
             <div className="product" key={product._id}>
               <div className="product-preview">
@@ -111,7 +116,7 @@ function HomePage() {
               <button
                 className="delete-button"
                 onClick={() => {
-                  deleteProduct(product._id);
+                  deleteProduct(product._id, index);
                 }}
               >
                 x
