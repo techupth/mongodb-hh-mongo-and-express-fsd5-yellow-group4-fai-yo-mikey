@@ -6,8 +6,25 @@ const productRouter = Router();
 
 productRouter.get("/", async (req, res) => {
   try {
+    const name = req.query.keywords;
+    const category = req.query.category;
+    const query = {};
+    if (name) {
+      const sanitizedName = name.replace(/\$/g, "");
+      query.name = new RegExp(sanitizedName, "i");
+    }
+
+    if (category) {
+      query.category = new RegExp(category, "i");
+    }
+
     const collection = db.collection("products");
-    const allProducts = await collection.find({}).toArray();
+    const allProducts = await collection
+      .find(query)
+      .sort({ created_at: -1, _id: -1 })
+      .limit(10)
+      .toArray();
+
     return res.json({
       data: allProducts,
     });
